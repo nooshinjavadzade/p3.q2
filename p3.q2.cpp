@@ -45,13 +45,35 @@ bool search_aplayer_ateam(team x , player y){
    }
    return true;
 }
+void hazf(team x,int id) {
+   for (int i = 0; i < 50; i++)
+   {
+      if (x.players[i].ID == id)
+      {
+         for (int j = i;j<50; j++)
+         {
+            x.players[i] = x.players[i+1];
+            if (x.players[i].name.empty())
+            {
+               x.players[i] = {};
+               break;
+            }
+            
+         }  
+         break;
+      }
+       
+   }
+   
+}
 int main(){
    player p[100];
    team t[100];
    string in;
    int num_player=0;
    int num_team=0;
-   while(1)
+   bool mewo = true;
+   while(mewo)
    {
       cin>>in;
       if (in == "end")
@@ -126,19 +148,20 @@ int main(){
       {
          int id_player;
          int id_team;
-         if (!t[id_team-1].name.empty()&&search_aplayer_ateam(t[id_team-1],p[id_player-1]))
+         if (!t[id_team-1].name.empty()&&!search_aplayer_ateam(t[id_team-1],p[id_player-1]))
          {
-            
+            hazf(t[id_team-1],id_player);
+            cout << "player sold succesfully";
          }
-         
-
+         else if (t[id_team-1].name.empty())
+         {
+            cout << "team doesnt exist";
+         }
+         else if (search_aplayer_ateam(t[id_team-1],p[id_player-1]))
+         {
+            cout << "team doest have this player";
+         }
       }
-      
-      
-      
-
    } 
-   
-
    return 0;
 }
