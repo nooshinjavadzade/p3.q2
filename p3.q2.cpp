@@ -78,7 +78,7 @@ int main(){
       cin>>in;
       if (in == "end")
       {
-         return 0;
+         break;
       }
       
       if (in == "new")
