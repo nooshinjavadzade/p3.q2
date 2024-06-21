@@ -46,29 +46,6 @@ bool search_aplayer_ateam(team x , player y){
    }
    return true;
 }
-void hazf(team x,int id) {
-   int last=-1;
-   for (int i = 0; i < 50; i++)
-   {
-      if (x.players[i].ID == id)
-      {
-         for (int j = i;j<50; j++)
-         {
-            x.players[j] = x.players[j+1];
-            if (!x.players[j + 1].name.empty()) {
-               last = j +1;
-               
-               }
-            
-         }  
-         break;
-      }
-       
-   }
-   if (last != -1) {
-        x.players[last] = {};
-    }
-}
 int count_teams(team x[]){
    int num = 0;
    for(int i = 0 ; !x[i].name.empty() ; i++){
@@ -171,7 +148,19 @@ int main(){
          cin >> id_team;
          if (!t[id_team-1].name.empty()&&!search_aplayer_ateam(t[id_team-1],p[id_player-1]))
          {
-            hazf(t[id_team-1],id_player);
+            for (int i = 0; i < 50; i++)
+            {
+               if (t[id_team-1].players[i].ID == id_player)
+               {
+                  for (int j = i;j<50; j++)
+                  {
+                     t[id_team-1].players[j] = t[id_team-1].players[j+1];
+                     
+                  }  
+                  break;
+               }
+               
+            }
             cout << "player sold succesfully" << endl;
          }
          else if (t[id_team-1].name.empty())
