@@ -46,23 +46,55 @@ bool search_aplayer_ateam(team x , player y){
    return true;
 }
 void hazf(team x,int id) {
+   int last=-1;
    for (int i = 0; i < 50; i++)
    {
       if (x.players[i].ID == id)
       {
          for (int j = i;j<50; j++)
          {
-            x.players[i] = x.players[i+1];
-            if (x.players[i].name.empty())
-            {
-               x.players[i] = {};
-               break;
-            }
+            x.players[j] = x.players[j+1];
+            if (!x.players[j + 1].name.empty()) {
+               last = j +1;
+               
+               }
             
          }  
          break;
       }
        
+   }
+   if (last != -1) {
+        x.players[last] = {};
+    }
+}
+void match(team x , team y){
+   int power_x = 0;
+   int power_y = 0;
+   for (int i = 0; i < 11; i++)
+   {
+      power_x += x.players[i].finishing + x.players[i].speed;
+   }
+   for (int i = 0; i < 11; i++)
+   {
+      power_y += y.players[i].speed + y.players[i].defence;
+   }
+   if (power_x > power_y)
+   {
+      x.wins++;
+      y.loses--;
+      x.money += 1000;
+   }
+   if (power_x < power_y)
+   {
+      y.wins++;
+      x.loses--;
+      y.money += 1000;
+   }
+   if (power_x == power_y)
+   {
+      x.mosavi++;
+      y.mosavi--;
    }
    
 }
@@ -78,7 +110,7 @@ int main(){
       cin>>in;
       if (in == "end")
       {
-         break;
+         return 0;
       }
       
       if (in == "new")
@@ -99,6 +131,9 @@ int main(){
             cin >> t[num_team].name;
             cin >> t[num_team].money;
             t[num_team].ID = num_team+1;
+            t[num_team].wins = 0;
+            t[num_team].loses = 0;
+            t[num_team].mosavi = 0;
             num_team++;
          }  
       }
@@ -162,6 +197,26 @@ int main(){
             cout << "team doest have this player";
          }
       }
+      if (in == "match")
+      {
+         int id_team1;
+         int id_team2;
+         cin >> id_team1;
+         cin >> id_team2;
+         if (t[id_team1-1].name.empty() || t[id_team2-1].name.empty())
+         {
+            cout << "team doesnt exist";
+         }
+         else if (t[id_team1-1].players[11].name.empty() || t[id_team2-1].players[11].name.empty())
+         {
+            cout << "the game can not be held due to loss of the players";
+         }
+         else
+         {
+            match(t[id_team1-1],t[id_team2-1]);
+         }
+      }
+      
    } 
    return 0;
 }
