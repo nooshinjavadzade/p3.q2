@@ -1,6 +1,7 @@
 #include <iostream>
 #include <string>
 #include <string.h>
+#include <algorithm>
 using namespace std;
 struct player
 {
@@ -68,35 +69,18 @@ void hazf(team x,int id) {
         x.players[last] = {};
     }
 }
-void match(team x , team y){
-   int power_x = 0;
-   int power_y = 0;
-   for (int i = 0; i < 11; i++)
-   {
-      power_x += x.players[i].finishing + x.players[i].speed;
+int count_teams(team x[]){
+   int num = 0;
+   for(int i = 0 ; !x[i].name.empty() ; i++){
+      num ++;
    }
-   for (int i = 0; i < 11; i++)
-   {
-      power_y += y.players[i].speed + y.players[i].defence;
-   }
-   if (power_x > power_y)
-   {
-      x.wins++;
-      y.loses--;
-      x.money += 1000;
-   }
-   if (power_x < power_y)
-   {
-      y.wins++;
-      x.loses--;
-      y.money += 1000;
-   }
-   if (power_x == power_y)
-   {
-      x.mosavi++;
-      y.mosavi--;
-   }
-   
+   return num;
+}
+bool compareTeams(const team &team1, const team &team2) {
+    if (team1.wins == team2.wins) {
+      return team1.loses < team2.loses;
+    }
+    return team1.wins > team2.wins;
 }
 int main(){
    player p[100];
@@ -183,18 +167,20 @@ int main(){
       {
          int id_player;
          int id_team;
+         cin >> id_player;
+         cin >> id_team;
          if (!t[id_team-1].name.empty()&&!search_aplayer_ateam(t[id_team-1],p[id_player-1]))
          {
             hazf(t[id_team-1],id_player);
-            cout << "player sold succesfully";
+            cout << "player sold succesfully" << endl;
          }
          else if (t[id_team-1].name.empty())
          {
-            cout << "team doesnt exist";
+            cout << "team doesnt exist" << endl;
          }
          else if (search_aplayer_ateam(t[id_team-1],p[id_player-1]))
          {
-            cout << "team doest have this player";
+            cout << "team doest have this player" << endl;
          }
       }
       if (in == "match")
@@ -205,16 +191,117 @@ int main(){
          cin >> id_team2;
          if (t[id_team1-1].name.empty() || t[id_team2-1].name.empty())
          {
-            cout << "team doesnt exist";
+            cout << "team doesnt exist" << endl;
          }
-         else if (t[id_team1-1].players[11].name.empty() || t[id_team2-1].players[11].name.empty())
+         else if (t[id_team1-1].players[10].name.empty() || t[id_team2-1].players[10].name.empty())
          {
-            cout << "the game can not be held due to loss of the players";
+            cout << "the game can not be held due to loss of the players" << endl;
          }
          else
          {
-            match(t[id_team1-1],t[id_team2-1]);
+            int power_1 = 0;
+            int power_2 = 0;
+            for (int i = 0; i < 11; i++)
+            {
+               power_1 += t[id_team1-1].players[i].finishing +t[id_team1-1].players[i].speed;
+            }
+            for (int i = 0; i < 11; i++)
+            {
+               power_2 += t[id_team2-1].players[i].speed + t[id_team2-1].players[i].defence;
+            }
+            if (power_1 > power_2)
+            {
+               t[id_team1-1].wins++;
+               t[id_team2-1].loses--;
+               t[id_team1-1].money += 1000;
+            }
+            if (power_1 < power_2)
+            {
+               t[id_team2-1].wins++;
+               t[id_team1-1].loses--;
+               t[id_team2-1].money += 1000;
+            }
+            if (power_1 == power_2)
+            {
+               t[id_team1-1].mosavi++;
+               t[id_team2-1].mosavi--;
+            }
          }
+      }
+      if (in == "show")
+      {
+         cin >> in;
+         if (in == "players")
+         {
+            for (int i = 0; !p[i].name.empty() ; i++)
+            {
+               cout << p[i].ID << " : " << p[i].name << endl;
+            }
+            
+         }
+         else if (in == "teams")
+         {
+            for (int i = 0; !t[i].name.empty()  ; i++)
+            {
+               cout << t[i].ID << " : " << t[i].name << endl;
+            }
+            
+         }
+         else if (in == "player")
+         {
+            int id;
+            cin >> id;
+            if (p[id-1].name.empty())
+            {
+               cout << "player doesnt exist" << endl;
+            }
+            else
+            {
+               cout << "player : " << p[id-1].name << endl;
+               cout << "price : " << p[id-1].price << endl;
+               cout << "state :" << endl;
+               cout << "speed : " << p[id-1].speed << endl;
+               cout << "finishing : " << p[id-1].finishing << endl;
+               cout << "defence : " << p[id-1].defence << endl; 
+            }
+            
+            
+         }
+         else if (in == "team")
+         {
+            int id;
+            cin >> id;
+            if (t[id-1].name.empty())
+            {
+               cout << "team doesnt exist" << endl;
+            }
+            else
+            {
+               cout << "team : " << t[id-1].name << endl;
+               cout << "money : " << t[id-1].money << endl;
+               cout << "players : ";
+               for (int i = 0; !t[id-1].players[i].name.empty(); i++)
+               {
+                  cout << t[id-1].players[i].ID << " ";
+               }
+               cout << endl;
+               cout << "state :" << endl;
+               cout << "win : " << t[id-1].wins << endl;
+               cout << "draw : " << t[id-1].mosavi << endl;
+               cout << "loose : " << t[id-1].loses << endl;
+            }
+            
+         }
+      }
+      if (in == "rank")
+      {
+         int size = count_teams(t);
+         sort(t, t + size, compareTeams);
+         for (int i = 0; !t[i].name.empty(); i++)
+         {
+            cout << i+1 << ". " << t[i].name <<endl;
+         }
+         
       }
       
    } 
